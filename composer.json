@@ -1,0 +1,14 @@
+{
+    "name": "attitude/Elements/HTMLEngine",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/attitude/elements"
+        }
+    ],
+    "require": {
+        "attitude/Elements": "0.1.*"
+    }
+}
