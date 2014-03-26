@@ -158,15 +158,25 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
             throw new HTTPException(404, 'Template does not exist.');
         }
 
+        if (isset($_GET['format'])) {
+            if ($_GET['format']==='json') {
                 self::printData($data);
+
+                exit;
+            } elseif ($_GET['format']==='json-pretty') {
+                self::printData($data, true);
+
+                exit;
+            }
+        }
 
         return $this->engine->render($template, $data);
     }
 
-    static public function printData($data)
+    static public function printData($data, $pretty=false)
     {
         header('Content-Type: text/json');
-        echo json_encode($data, JSON_PRETTY_PRINT);
+        echo $pretty ? json_encode($data, JSON_PRETTY_PRINT) : json_encode($data);
     }
 
     public function setCache($path)
