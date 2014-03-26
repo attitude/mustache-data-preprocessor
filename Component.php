@@ -6,7 +6,7 @@ use \attitude\Elements\HTTPException;
 use \attitude\Elements\Singleton_Prototype;
 use \attitude\Elements\DependencyContainer;
 
-class HTMLEngine_Element extends Singleton_Prototype
+class HTMLRenderEngine_Component extends Singleton_Prototype
 {
     protected $engine = null;
 
@@ -97,7 +97,7 @@ class HTMLEngine_Element extends Singleton_Prototype
         foreach ($data as $key => &$values) {
             if (is_array($values)) {
                 $values_to_merge = array();
-                
+
                 foreach($values as $k => &$v) {
                     if (is_string($k) && strstr($k, '()') && is_array($v)) {
                         $function = rtrim($k, '()');
