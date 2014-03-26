@@ -97,6 +97,7 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
         foreach ($data as $key => &$values) {
             if (is_array($values)) {
                 $values_to_merge = array();
+                $is_sequence_array = ! $this->is_assoc_array($values);
 
                 foreach($values as $k => $v) {
                     if (is_string($k) && strstr($k, '()') && is_array($v)) {
@@ -118,6 +119,9 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
 
                 if (empty($values)) {
                     unset($data[$key]);
+                } else if ($is_sequence_array) {
+                    // Reindex array starting from 0
+                    $values = array_values($values);
                 }
             }
 
@@ -154,7 +158,7 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
             throw new HTTPException(404, 'Template does not exist.');
         }
 
-        self::printData($data);
+                self::printData($data);
 
         return $this->engine->render($template, $data);
     }
