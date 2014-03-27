@@ -1,12 +1,12 @@
 <?php
 
-namespace attitude;
+namespace attitude\Mustache;
 
 use \attitude\Elements\HTTPException;
 use \attitude\Elements\Singleton_Prototype;
 use \attitude\Elements\DependencyContainer;
 
-class HTMLRenderEngine_Component extends Singleton_Prototype
+class DataPreprocessor_Component extends Singleton_Prototype
 {
     protected $engine = null;
 

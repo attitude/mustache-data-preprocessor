@@ -1,5 +1,5 @@
 {
-    "name": "attitude/HTMLRenderEngine",
+    "name": "attitude/Mustache/DataPreprocessor",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": [
