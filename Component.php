@@ -20,8 +20,8 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
     protected function __construct()
     {
         $this->setCache(DependencyContainer::get('global::mustacheCachePath', null));
-        $this->setViews(DependencyContainer::get('global::mustacheViewsPath', null));
-        $this->setPartials(DependencyContainer::get('global::mustachePartialsPath', null));
+        $this->setViews(DependencyContainer::get('global::mustacheViews', null));
+        $this->setPartials(DependencyContainer::get('global::mustachePartials', null));
         $this->setHelpers(DependencyContainer::get('global::mustacheHelpers', null));
         $this->setExpanders(DependencyContainer::get('global::dataExpanders', null));
 
@@ -151,13 +151,6 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
         // Pick template from data
         $template = isset($data['template']) ? $data['template'] : 'default';
 
-        // Validate template
-        $template_path = DependencyContainer::get('global::mustacheViewsPath').'/'.$template.'.mustache';
-
-        if (!file_exists($template_path)) {
-            throw new HTTPException(404, 'Template does not exist.');
-        }
-
         if (isset($_GET['format'])) {
             if ($_GET['format']==='json') {
                 self::printData($data);
@@ -170,7 +163,13 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
             }
         }
 
-        return $this->engine->render($template, $data);
+        try {
+            $view = $this->engine->render($template, $data);
+        } catch (\Mustache_Exception $e) {
+            throw new HTTPException(404, 'Template does not exist.');
+        }
+
+        return $view;
     }
 
     static public function printData($data, $pretty=false)
@@ -202,7 +201,15 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
             return $this;
         }
 
-        throw new HTTPException(500, 'HTML Engine cache must be a real path.');
+        if ($path instanceof \Mustache_Loader) {
+            return $this->setViewsLoader($path);
+        }
+
+        throw new HTTPException(500, 'HTML Engine cache must be a real path or an instance implementing Mustache_Loader interface.');
+    }
+
+    public function setViewsLoader(\Mustache_Loader $loader) {
+        $this->loader = $loader;
     }
 
     public function setPartials($path)
@@ -215,7 +222,15 @@ class HTMLRenderEngine_Component extends Singleton_Prototype
             return $this;
         }
 
-        throw new HTTPException(500, 'HTML Engine cache must be a real path.');
+        if ($path instanceof \Mustache_Loader) {
+            return $this->setPartialsLoader($path);
+        }
+
+        throw new HTTPException(500, 'HTML Engine cache must be a real path or an instance implementing Mustache_Loader interface.');
+    }
+
+    public function setPartialsLoader(\Mustache_Loader $loader) {
+        $this->partials_loader = $loader;
     }
 
     public function setHelpers($array)
