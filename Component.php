@@ -240,6 +240,47 @@ class DataPreprocessor_Component extends Singleton_Prototype
         $this->helpers = array(
             'slug' => function($str) {
                 return \generate_slug($str);
+            },
+            'uppercase' => function($str) {
+                return strtoupper(trim($str));
+            },
+            'lowercase' => function($str) {
+                return strtolower(trim($str));
+            },
+            'titlecase' => function($str) {
+                return ucwords(trim($str));
+            },
+            'sentencecase' => function($str) {
+                return ucfirst(trim($str));
+            },
+            'md5' => function($str) {
+                return md5($str);
+            },
+            'nl2br' => function($str) {
+                return nl2br($str);
+            },
+            'trim' => function($str) {
+                return trim($str);
+            },
+            'plaintext' => function($str) {
+                return strip_tags($str);
+            },
+            'money' => function($str) {
+                static $decimals        = null;
+                static $dec_point       = null;
+                static $thousands_sep   = null;
+                static $currency_prefix = null;
+                static $currency_symbol = null;
+
+                if ($decimals===null)        { DependencyContainer::get('money::decimals', 4); }
+                if ($dec_point===null)       { DependencyContainer::get('money::dec_point', '.'); }
+                if ($thousands_sep===null)   { DependencyContainer::get('money::thousands_sep', ','); }
+                if ($currency_prefix===null) { DependencyContainer::get('money::currency_prefix', true); }
+                if ($currency_symbol===null) { DependencyContainer::get('money::currency_symbol', 'EUR'); }
+
+                $n = number_format((float) $str, $decimals, $dec_point, $thousands_sep);
+
+                return $currency_prefix ? "{$currency_symbol} {$n}" : "{$n} {$currency_symbol}";
             }
         );
 
