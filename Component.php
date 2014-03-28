@@ -22,6 +22,8 @@ class DataPreprocessor_Component extends Singleton_Prototype
         $this->setCache(DependencyContainer::get('global::mustacheCachePath', null));
         $this->setViews(DependencyContainer::get('global::mustacheViews', null));
         $this->setPartials(DependencyContainer::get('global::mustachePartials', null));
+
+        $this->setPredefinedHelpers();
         $this->setHelpers(DependencyContainer::get('global::mustacheHelpers', null));
         $this->setExpanders(DependencyContainer::get('global::dataExpanders', null));
 
@@ -233,12 +235,25 @@ class DataPreprocessor_Component extends Singleton_Prototype
         $this->partials_loader = $loader;
     }
 
+    public function setPredefinedHelpers()
+    {
+        $this->helpers = array(
+            'slug' => function($str) {
+                return \generate_slug($str);
+            }
+        );
+
+        return $this;
+    }
+
     public function setHelpers($array)
     {
         if ($array===null) { return $this; }
 
         if (is_array($array) && sizeof($array)>0) {
-            $this->helpers = $array;
+            foreach ($array as $k => &$f) {
+                $this->helpers[$k] = $f;
+            }
 
             return $this;
         }
