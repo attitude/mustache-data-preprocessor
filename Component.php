@@ -166,7 +166,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
         try {
             $view = $this->engine->render($template, $data);
         } catch (\Mustache_Exception $e) {
-            throw new HTTPException(404, 'Template does not exist.');
+            throw new HTTPException(404, $e->getMessage());
         }
 
         return $view;
