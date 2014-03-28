@@ -10,10 +10,17 @@
         {
             "type": "vcs",
             "url": "https://github.com/attitude/elements-singleton"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gist.github.com/9842170.git"
         }
     ],
     "require": {
-        "attitude/Elements": "0.1.*",
-        "attitude/Elements/Singleton": "0.2.*"
+        "attitude/Elements":                "0.1.*",
+        "attitude/Elements/Singleton":      "0.2.*"
+    },
+    "require-dev": {
+        "attitude/Functions/generate_slug": "dev-master"
     }
 }
