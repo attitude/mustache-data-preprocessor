@@ -238,6 +238,15 @@ class DataPreprocessor_Component extends Singleton_Prototype
     public function setPredefinedHelpers()
     {
         $this->helpers = array(
+            'json' => function($v) {
+                return json_encode($v);
+            },
+            'debug' => function($v) {
+                return "<pre>\n".json_encode($v, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE)."\n</pre>\n";
+            },
+            'jsonpretty' => function($v) {
+                return json_encode($v, JSON_PRETTY_PRINT);
+            },
             'slug' => function($str) {
                 return \generate_slug($str);
             },
@@ -281,6 +290,10 @@ class DataPreprocessor_Component extends Singleton_Prototype
                 $n = number_format((float) $str, $decimals, $dec_point, $thousands_sep);
 
                 return $currency_prefix ? "{$currency_symbol} {$n}" : "{$n} {$currency_symbol}";
+            },
+            'translate' => function($str) {
+                // NOOP
+                return $str;
             }
         );
 
