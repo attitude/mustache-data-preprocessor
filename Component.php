@@ -307,6 +307,9 @@ class DataPreprocessor_Component extends Singleton_Prototype
             'plaintext' => function($str) {
                 return strip_tags($str);
             },
+            'stripp' => function($str) {
+                return str_replace(array('<p>', '</p>'),'', $str);
+            },
             'money' => function($str) {
                 static $decimals        = null;
                 static $dec_point       = null;
