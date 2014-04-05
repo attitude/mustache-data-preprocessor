@@ -299,7 +299,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
                 return md5($str);
             },
             'nl2br' => function($str) {
-                return nl2br($str);
+                return str_replace("\n", '', nl2br($str));
             },
             'trim' => function($str) {
                 return trim($str);
