@@ -71,7 +71,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
         return $data;
     }
 
-    protected function is_assoc_array($array, $speedy=true) {
+    protected function is_assoc_array(array $array, $speedy=true) {
         if ($speedy) {
             return ($array !== array_values($array));
         }
@@ -141,10 +141,10 @@ class DataPreprocessor_Component extends Singleton_Prototype
             foreach ($data as &$values) {
                 $values = $this->fixMissingKeys($values);
 
-                if (! $this->is_assoc_array($values)) {
+                if (is_array($values) && !$this->is_assoc_array($values)) {
                     $empty_keys = array();
                     foreach ($values as &$v) {
-                        if ($this->is_assoc_array($v)) {
+                        if (is_array($v) && $this->is_assoc_array($v)) {
                             foreach ($v as $empty_key => $empty_value) {
                                 $empty_keys[$empty_key] = (is_array($empty_value)) ? array() : null;
                             }
