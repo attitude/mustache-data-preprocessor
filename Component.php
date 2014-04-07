@@ -327,9 +327,27 @@ class DataPreprocessor_Component extends Singleton_Prototype
 
                 return $currency_prefix ? "{$currency_symbol} {$n}" : "{$n} {$currency_symbol}";
             },
-            'translate' => function($str) {
-                // NOOP
-                return $str;
+            '__' => function($str, $lambda_helper) {
+                return DependencyContainer::get('i18l::translate', function($str){ return $str; })->__invoke($str);
+            },
+            '_n' => function($str, $lambda_helper) {
+                // Have arguments
+                if ($args = json_decode($str, true)) {
+                    // Bad format
+                    if (!isset($args['var']) || !isset($args['one']) || !isset($args['other'])) {
+                        return '<!--Bad format for: _n('.$str.')-->';
+                    }
+
+                    $var = (int) abs(ceil($lambda_helper->render('{{'.$args['var'].'}}')));
+
+                    if ($var===1) {
+                        return str_replace('{}', '{{'.$args['var'].'}}', DependencyContainer::get('i18l::translate', function($str){ return $str; })->__invoke($args['one']));
+                    }
+
+                    return str_replace('{}', '{{'.$args['var'].'}}', DependencyContainer::get('i18l::translate', function($str, $count=0){ return $str; })->__invoke($args['other'], $var));
+                }
+
+                return '<!--Malformated: _n('.$str.')-->';
             }
         );
 
