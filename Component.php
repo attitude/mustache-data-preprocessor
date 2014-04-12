@@ -340,11 +340,27 @@ class DataPreprocessor_Component extends Singleton_Prototype
 
                     $var = (int) abs(ceil($lambda_helper->render('{{'.$args['var'].'}}')));
 
-                    if ($var===1) {
-                        return str_replace('{}', '{{'.$args['var'].'}}', DependencyContainer::get('i18l::translate', function($str){ return $str; })->__invoke($args['one']));
-                    }
+                    /** @TODO: Accept offset parameter as AngularJS **/
 
-                    return str_replace('{}', '{{'.$args['var'].'}}', DependencyContainer::get('i18l::translate', function($str, $count=0){ return $str; })->__invoke($args['other'], $var));
+                    return str_replace(
+                        // Replace {} placeholders
+                        '{}',
+                        '{{'.$args['var'].'}}',
+                        // In returned translation form
+                        DependencyContainer::get(
+                            // Dependency key
+                            'i18l::translate',
+                            // Default behaviour without dependency set
+                            // NOOP example function to return translation.
+                            function($one, $other, $count=0, $offset=0) {
+                                if ($count===1) {
+                                    return $one;
+                                }
+
+                                return $other;
+                            }
+                        )->__invoke($args['one'], $args['other'], $var/*, $offset */)
+                    );
                 }
 
                 return '<!--Malformated: _n('.$str.')-->';
