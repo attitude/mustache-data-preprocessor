@@ -354,7 +354,8 @@ class DataPreprocessor_Component extends Singleton_Prototype
                         return '<!--Bad format for: _n('.$str.')-->';
                     }
 
-                    $var = (int) abs(ceil($lambda_helper->render('{{'.$args['var'].'}}')));
+                    $var = $lambda_helper->render('{{'.$args['var'].'}}');
+                    $var = strstr($var,'.') || strstr($var, ',') ? (float) $var : (int) $var;
 
                     /** @TODO: Accept offset parameter as AngularJS **/
 
