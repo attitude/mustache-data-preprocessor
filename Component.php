@@ -271,6 +271,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
     public function setPredefinedHelpers()
     {
         $this->helpers = array(
+            // Development
             'json' => function($v) {
                 return json_encode($v);
             },
@@ -280,6 +281,8 @@ class DataPreprocessor_Component extends Singleton_Prototype
             'jsonpretty' => function($v) {
                 return json_encode($v, JSON_PRETTY_PRINT);
             },
+
+            // Strings
             'slug' => function($str) {
                 return \generate_slug($str);
             },
@@ -310,6 +313,8 @@ class DataPreprocessor_Component extends Singleton_Prototype
             'stripp' => function($str) {
                 return str_replace(array('<p>', '</p>'),'', $str);
             },
+
+            // Numbers
             'money' => function($str) {
                 static $decimals        = null;
                 static $dec_point       = null;
@@ -327,6 +332,17 @@ class DataPreprocessor_Component extends Singleton_Prototype
 
                 return $currency_prefix ? "{$currency_symbol} {$n}" : "{$n} {$currency_symbol}";
             },
+
+            // Arrays
+            'count' => function($v) {
+                return is_array($v) ? count($v) : null;
+            },
+
+            'reverse' => function($v) {
+                return is_array($v) || is_object($v) ? (array) array_reverse($v) : strrev($v);
+            },
+
+            // Translations (i18n, l10n)
             '__' => function($str, $lambda_helper) {
                 return DependencyContainer::get('i18l::translate', function($str){ return $str; })->__invoke($str);
             },
