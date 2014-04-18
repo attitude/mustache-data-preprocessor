@@ -322,11 +322,11 @@ class DataPreprocessor_Component extends Singleton_Prototype
                 static $currency_prefix = null;
                 static $currency_symbol = null;
 
-                if ($decimals===null)        { DependencyContainer::get('money::decimals', 4); }
-                if ($dec_point===null)       { DependencyContainer::get('money::dec_point', '.'); }
-                if ($thousands_sep===null)   { DependencyContainer::get('money::thousands_sep', ','); }
-                if ($currency_prefix===null) { DependencyContainer::get('money::currency_prefix', true); }
-                if ($currency_symbol===null) { DependencyContainer::get('money::currency_symbol', 'EUR'); }
+                if ($decimals===null)        { $decimals        = DependencyContainer::get('money::decimals', 2); }
+                if ($dec_point===null)       { $dec_point       = DependencyContainer::get('money::dec_point', '.'); }
+                if ($thousands_sep===null)   { $thousands_sep   = DependencyContainer::get('money::thousands_sep', ','); }
+                if ($currency_prefix===null) { $currency_prefix = DependencyContainer::get('money::currency_prefix', true); }
+                if ($currency_symbol===null) { $currency_symbol = DependencyContainer::get('money::currency_symbol', 'EUR'); }
 
                 $n = number_format((float) $str, $decimals, $dec_point, $thousands_sep);
 
