@@ -412,6 +412,6 @@ class DataPreprocessor_Component extends Singleton_Prototype
             return $this;
         }
 
-        throw new HTTPException(500, 'HTML Engine cache must be a real path.');
+        throw new HTTPException(500, 'HTML Engine expanders must be an array.');
     }
 }
