@@ -94,8 +94,10 @@ class DataPreprocessor_Component extends Singleton_Prototype
         return $data;
     }
 
-    protected function expandData(array $data)
+    protected function expandData(array $data, $level = 0)
     {
+        $level++;
+
         foreach ($data as $key => &$values) {
             if (is_array($values)) {
                 $values_to_merge = array();
@@ -108,9 +110,11 @@ class DataPreprocessor_Component extends Singleton_Prototype
                         if (isset($this->expanders[$function]) && is_callable($this->expanders[$function])) {
                             unset($values[$k]);
 
-                            try {
-                                $values_to_merge[] = $this->expanders[$function]($v);
-                            } catch (HTTPException $e) { /* do nothing */ }
+                            if ($level <= 2) {
+                                try {
+                                    $values_to_merge[] = $this->expandData($this->expanders[$function]($v), $level);
+                                } catch (HTTPException $e) { /* do nothing */ }
+                            }
                         }
                     }
                 }
