@@ -10,6 +10,9 @@ class DataPreprocessor_Component extends Singleton_Prototype
 {
     protected $engine = null;
 
+    //-- Whether to protect emails from harvesters using Hivelogic Encoder
+    protected $antispam = true;
+
     //-- Mustache Settings
     protected $cache  = null;
     protected $loader = null;
@@ -26,6 +29,8 @@ class DataPreprocessor_Component extends Singleton_Prototype
         $this->setPredefinedHelpers();
         $this->setHelpers(DependencyContainer::get('global::mustacheHelpers', null));
         $this->setExpanders(DependencyContainer::get('global::dataExpanders', null));
+
+        $this->antispam = !! DependencyContainer::get('global::antispamEnabled', true);
 
         $this->engine = new \Mustache_Engine(array(
             'cache' => $this->cache,
@@ -208,7 +213,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
             throw new HTTPException(404, $e->getMessage());
         }
 
-        return $view;
+        return $this->antispam ? self::antispam($view) : $view;
     }
 
     static public function printData($data, $pretty=false)
@@ -272,6 +277,20 @@ class DataPreprocessor_Component extends Singleton_Prototype
         $this->partials_loader = $loader;
     }
 
+    public static function antispam($str) {
+        static $encoder = null;
+
+        // init
+        if ($encoder===null) {
+            require_once dirname(__FILE__).'/HivelogicEncoder/StandalonePHPEnkoder.php';
+            $encoder = new \StandalonePHPEnkoder();
+
+            $encoder->enkode_msg = DependencyContainer::get('i18l::translate', function($str){ return $str; })->__invoke($encoder->enkode_msg);
+        }
+
+        return $encoder->enkodeAllEmails($str);
+    }
+
     public function setPredefinedHelpers()
     {
         $this->helpers = array(
@@ -316,6 +335,9 @@ class DataPreprocessor_Component extends Singleton_Prototype
             },
             'stripp' => function($str) {
                 return str_replace(array('<p>', '</p>'),'', $str);
+            },
+            'antispam' => function($str) {
+                return self::antispam($str);
             },
 
             // Numbers
