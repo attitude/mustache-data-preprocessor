@@ -99,8 +99,12 @@ class DataPreprocessor_Component extends Singleton_Prototype
         return $data;
     }
 
-    protected function expandData(array $data, $level = 0)
+    protected function expandData($data, $level = 0)
     {
+        if (!is_array($data)) {
+            return $data;
+        }
+
         $level++;
 
         foreach ($data as $key => &$values) {
@@ -117,7 +121,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
 
                             if ($level <= 2) {
                                 try {
-                                    $values_to_merge[] = $this->expandData($this->expanders[$function]($v), $level);
+                                    $values_to_merge[] = $this->expandData($this->expanders[$function]->__invoke($v), $level);
                                 } catch (HTTPException $e) { /* do nothing */ }
                             }
                         }
@@ -125,19 +129,19 @@ class DataPreprocessor_Component extends Singleton_Prototype
                 }
 
                 foreach ($values_to_merge as &$_values) {
-                    $values = array_merge($values, $_values);
+                    if (is_array($_values)) {
+                        $values = array_merge($values, $_values);
+                    } else {
+                        $values = $_values;
+                    }
                 }
 
                 if (empty($values)) {
                     unset($data[$key]);
-                } else if ($is_sequence_array) {
+                } elseif ($is_sequence_array) {
                     // Reindex array starting from 0
                     $values = array_values($values);
                 }
-            }
-
-            if (is_array($values)) {
-                $values = $this->expandData($values);
             }
         }
 
