@@ -143,6 +143,10 @@ class DataPreprocessor_Component extends Singleton_Prototype
                     // Reindex array starting from 0
                     $values = array_values($values);
                 }
+
+                if (is_array($values)) {
+                    $values = $this->expandData($values);
+                }
             }
         }
 
