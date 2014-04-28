@@ -91,7 +91,8 @@ class DataPreprocessor_Component extends Singleton_Prototype
             if (is_array($v)) {
                 $v = $this->arraysHaveItems($v);
                 if (! $this->is_assoc_array($v)) {
-                    $data['has'.ucfirst($k)] = !empty($v);
+                    $count = count($v);
+                    $data['has'.ucfirst($k)] = empty($v) ? false : $count;
                 }
             }
         }
