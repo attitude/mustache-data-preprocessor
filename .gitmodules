@@ -1,3 +1,0 @@
-[submodule "HivelogicEncoder"]
-	path = HivelogicEncoder
-	url = git@github.com:jnicol/standalone-phpenkoder.git
