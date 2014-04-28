@@ -282,7 +282,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
 
         // init
         if ($encoder===null) {
-            require_once dirname(__FILE__).'/HivelogicEncoder/StandalonePHPEnkoder.php';
+            require_once dirname(__FILE__).'/vendor/jnicol/standalone-phpenkoder/StandalonePHPEnkoder.php';
             $encoder = new \StandalonePHPEnkoder();
 
             $encoder->enkode_msg = DependencyContainer::get('i18l::translate', function($str){ return $str; })->__invoke($encoder->enkode_msg);
