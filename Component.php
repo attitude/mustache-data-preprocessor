@@ -416,6 +416,9 @@ class DataPreprocessor_Component extends Singleton_Prototype
                 }
 
                 return '<!--Malformated: _n('.$str.')-->';
+            },
+            'dateformated' => function($str, $lambda_helper = null) {
+                return $str;
             }
         );
 
