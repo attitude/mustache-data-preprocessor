@@ -17,8 +17,8 @@
         }
     ],
     "require": {
-        "attitude/Elements":                "0.1.*",
-        "attitude/Elements/Singleton":      "0.2.*"
+        "attitude/Elements":                "~0.2.0",
+        "attitude/Elements/Singleton":      "~0.2.0"
     },
     "require-dev": {
         "attitude/Functions/generate_slug": "dev-master"
