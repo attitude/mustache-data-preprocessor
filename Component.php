@@ -114,7 +114,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
                 $is_sequence_array = ! $this->is_assoc_array($values);
 
                 foreach($values as $k => $v) {
-                    if (is_string($k) && strstr($k, '()') && is_array($v)) {
+                    if (is_string($k) && strstr($k, '()')) {
                         $function = rtrim($k, '()');
 
                         if (isset($this->expanders[$function]) && is_callable($this->expanders[$function])) {
@@ -122,7 +122,12 @@ class DataPreprocessor_Component extends Singleton_Prototype
 
                             if ($level <= 2) {
                                 try {
-                                    $values_to_merge[] = $this->expandData($this->expanders[$function]->__invoke($v), $level);
+                                    $values_to_merge[] =
+                                        is_object($v) ?
+                                        $this->expandData($this->expanders[$function]->__invoke((array) $v), $level)
+                                        :
+                                        $this->expandData($this->expanders[$function]->__invoke($v), $level)
+                                    ;
                                 } catch (HTTPException $e) { /* do nothing */ }
                             }
                         }
