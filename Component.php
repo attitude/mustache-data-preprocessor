@@ -302,29 +302,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
             $encoder->enkode_msg = DependencyContainer::get('i18l::translate', function($str){ return $str; })->__invoke($encoder->enkode_msg);
         }
 
-        return $encoder->enkodeAllEmails(
-            preg_replace_callback(
-                '/(\w+)=[\'"][^\'"]+@[^\'"]+[\'"]/',
-                function($matches) {
-                    static $protect;
-
-                    // Init data just once
-                    if (!isset($protect)) {
-                        // To override preconfig using:
-                        // DependencyContainer::set('antispam::protectedAttrs', array('your', 'attributes', 'to', 'protect'));
-                        $protect = DependencyContainer::get('antispam::protectedAttrs', array('href'));
-                    }
-
-                    // Skip
-                    if (in_array($matches[1], $protect)) {
-                        return $matches[0];
-                    }
-
-                    return str_replace('@', '[[[at]]]', $matches[0]);
-                },
-                $str
-            )
-        );
+        return $encoder->enkodeAllEmails($str);
     }
 
     public function setPredefinedHelpers()
