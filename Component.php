@@ -210,12 +210,14 @@ class DataPreprocessor_Component extends Singleton_Prototype
         $template = isset($data['template']) ? $data['template'] : 'default';
 
         if (isset($_GET['format'])) {
-            if ($_GET['format']==='json') {
-                self::printData($data);
+            if (strstr($_GET['format'], 'json')) {
+                foreach ($data as $k => &$v) {
+                    if (substr($k, 0, 2) === '__' && substr($k, -2) === '__') {
+                        unset($data[$k]);
+                    }
+                }
 
-                exit;
-            } elseif ($_GET['format']==='json-pretty') {
-                self::printData($data, true);
+                self::printData($data, $_GET['format'] === 'json-pretty');
 
                 exit;
             }
