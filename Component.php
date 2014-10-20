@@ -92,7 +92,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
                 $v = $this->arraysHaveItems($v);
                 if (! $this->is_assoc_array($v)) {
                     $count = count($v);
-                    $data['has'.ucfirst($k)] = empty($v) ? false : $count;
+                    $data['__has'.ucfirst($k)] = empty($v) ? false : $count;
                 }
             }
         }
@@ -188,6 +188,30 @@ class DataPreprocessor_Component extends Singleton_Prototype
         return $data;
     }
 
+    /**
+     * Remove any keys with `__` prefix
+     *
+     * @param $data array
+     * @return array Filtered $data
+     *
+     */
+    private function removeHiddenKeys($data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $k => &$v) {
+                if (substr($k, 0, 2) === '__') {
+                    unset($data[$k]);
+
+                    continue;
+                }
+
+                $v = $this->removeHiddenKeys($v);
+            }
+        }
+
+        return $data;
+    }
+
     public function render($data, $language = null)
     {
         // Enhance data for templates
@@ -211,11 +235,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
 
         if (isset($_GET['format'])) {
             if (strstr($_GET['format'], 'json')) {
-                foreach ($data as $k => &$v) {
-                    if (substr($k, 0, 2) === '__' && substr($k, -2) === '__') {
-                        unset($data[$k]);
-                    }
-                }
+                $data = $this->removeHiddenKeys($data);
 
                 self::printData($data, $_GET['format'] === 'json-pretty');
 
