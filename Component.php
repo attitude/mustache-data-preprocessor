@@ -231,7 +231,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
         $data = $this->arraysHaveItems($data);
 
         // Pick template from data
-        $template = isset($data['template']) ? $data['template'] : 'default';
+        $template = isset($data['data']['template']) ? $data['data']['template'] : 'default';
 
         if (isset($_GET['format'])) {
             if (strstr($_GET['format'], 'json')) {
