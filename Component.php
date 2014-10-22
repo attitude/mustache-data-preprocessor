@@ -197,9 +197,17 @@ class DataPreprocessor_Component extends Singleton_Prototype
      */
     private function removeHiddenKeys($data)
     {
+        // Show all private data
+        if (DependencyContainer::get('global::showAllHiddenAttrs', false)) {
+            return $data;
+        }
+
+        // Keep at least keys with one `_` prefixed
+        $one = DependencyContainer::get('global::showBasicHiddenAttrs', false);
+
         if (is_array($data)) {
             foreach ($data as $k => &$v) {
-                if (substr($k, 0, 2) === '__') {
+                if (($one && substr($k, 0, 2) === '__') || (!$one && substr($k, 0, 1) === '_')) {
                     unset($data[$k]);
 
                     continue;
