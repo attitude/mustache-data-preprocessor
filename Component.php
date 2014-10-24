@@ -412,6 +412,37 @@ class DataPreprocessor_Component extends Singleton_Prototype
                 return is_array($v) || is_object($v) ? (array) array_reverse($v) : strrev($v);
             },
 
+            'orderby' => function($v) {
+                if (!is_array($v)) {
+                    return $v;
+                }
+
+                $this->defaultOrderHelper($v);
+
+                return $v;
+            },
+
+            // Alias of `orderby`
+            'orderbyasc' => function($v) {
+                if (!is_array($v)) {
+                    return $v;
+                }
+
+                $this->defaultOrderHelper($v);
+
+                return $v;
+            },
+
+            'orderbydesc' => function($v) {
+                if (!is_array($v)) {
+                    return $v;
+                }
+
+                $this->defaultOrderHelper($v);
+
+                return array_reverse($v);
+            },
+
             // Translations (i18n, l10n)
             '__' => function($str, $lambda_helper) {
                 return DependencyContainer::get('i18l::translate', function($str){ return $str; })->__invoke($str);
@@ -458,6 +489,28 @@ class DataPreprocessor_Component extends Singleton_Prototype
         );
 
         return $this;
+    }
+
+    private function defaultOrderHelper(&$v)
+    {
+        uasort($v, function($a, $b) {
+            $orderA = isset($a['order']) ? $a['order'] : null;
+            $orderB = isset($b['order']) ? $b['order'] : null;
+
+            if (isset($orderB) && is_numeric($orderB) && $orderA === null) {
+                $orderA = $orderB + 1;
+            }
+
+            if (isset($orderA) && is_numeric($orderA) && $orderB === null) {
+                $orderB = $orderA + 1;
+            }
+
+            if ($orderA == $orderB) {
+                return 0;
+            }
+
+            return ($orderA < $orderB) ? -1 : 1;
+        });
     }
 
     public function setHelpers($array)
