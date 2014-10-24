@@ -241,14 +241,18 @@ class DataPreprocessor_Component extends Singleton_Prototype
         // Pick template from data
         $template = isset($data['data']['template']) ? $data['data']['template'] : 'default';
 
-        if (isset($_GET['format'])) {
-            if (strstr($_GET['format'], 'json')) {
-                $data = $this->removeHiddenKeys($data);
+        // Determine Accept HTTP header
+        $accept = array();
+        try {
+            $request = DependencyContainer::get('global::request');
+            $accept = $request->getAccept();
+        } catch(HTTPException $e) {}
 
-                self::printData($data, $_GET['format'] === 'json-pretty');
+        if (in_array('json', $accept) || (isset($_GET['format']) && strstr($_GET['format'], 'json'))) {
+            $data = $this->removeHiddenKeys($data);
+            self::printData($data, $_GET['format'] === 'json-pretty');
 
-                exit;
-            }
+            exit;
         }
 
         try {
