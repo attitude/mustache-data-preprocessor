@@ -493,7 +493,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
 
     private function defaultOrderHelper(&$v)
     {
-        uasort($v, function($a, $b) {
+        usort($v, function($a, $b) {
             $orderA = isset($a['order']) ? $a['order'] : null;
             $orderB = isset($b['order']) ? $b['order'] : null;
 
