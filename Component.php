@@ -265,7 +265,11 @@ class DataPreprocessor_Component extends Singleton_Prototype
         $links = $this->flatten($data);
 
         foreach ($links as $link) {
-            $data['linked'][$link['type']][] = $link;
+            $data['linked'][$link['type']][$link['id']] = $link;
+        }
+
+        foreach ($data['linked'] as &$linked) {
+            $linked = array_values($linked);
         }
 
         return true;
