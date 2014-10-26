@@ -220,9 +220,102 @@ class DataPreprocessor_Component extends Singleton_Prototype
         return $data;
     }
 
+    /**
+     * Helper method to merge and flatten linked resource links
+     *
+     * @param array $resource Current resource data withoud `resource.links`
+     * @param array $linked Array of all linked resources where to put current resource links
+     * @param array $links Links to merge
+     * @return bool Returns `TRUE` on success, `FALSE` on failure
+     *
+     */
+    private function resourceLinkedLinks(&$resource, &$linked, &$links)
+    {
+        if (!is_array($resource) || !is_array($linked) || !is_array($links)) {
+            return false;
+        }
+
+        foreach ($links as $linkType =>& $linkData) {
+            foreach ($linkData as $linkDataItem) {
+                if (!isset($linkDataItem['href']) || !isset($linkDataItem['id']) || !isset($linkDataItem['type'])) {
+                    throw new HTTPException(500, 'Unexpected: Linked item must have `id`, `type` & `href` defined.');
+                }
+
+                $resource['links'][$linkType][] = array(
+                    'href' => $linkDataItem['href'],
+                    'id'   => $linkDataItem['id'],
+                    'type' => $linkDataItem['type']
+                );
+
+                $linked[$linkType][$linkDataItem['id']] = $linkDataItem;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Walks the data and moves any `.links` into `resource.linked`
+     *
+     * @param array $data Resource passed by refference
+     * @return array Array of linked resources by type
+     *
+     */
+    private function jsonAPIFlatten(&$data) {
+        $links = $this->flatten($data);
+
+        foreach ($links as $link) {
+            $data['linked'][$link['type']][] = $link;
+        }
+
+        return true;
+    }
+
+    private function flatten(&$data)
+    {
+        $linked = array();
+
+        foreach ($data as $k =>& $v) {
+            if (is_array($v)) {
+                $linked = array_merge($this->flatten($v), $linked);
+            }
+
+            if ($k === 'links' && is_array($v)) {
+                foreach ($v as $vk => &$vv) {
+                    // Array of items
+                    if (isset($vv[0])) {
+                        foreach ($vv as $i => $link) {
+                            if (isset($link['href']) && isset($link['id']) && isset($link['type'])) {
+                                $linked[] = $link;
+
+                                $vv[$i] = array(
+                                    'href' => $link['href'],
+                                    'id'   => $link['id'],
+                                    'type' => $link['type']
+                                );
+                            }
+                        }
+                    } elseif (isset($vv['href']) && isset($vv['id']) && isset($vv['type'])) {
+                        // Has one relationship
+                        $link =& $vv;
+                        $linked[] = $link;
+
+                        $v[$vk] = array(
+                            'href' => $link['href'],
+                            'id'   => $link['id'],
+                            'type' => $link['type']
+                        );
+                    }
+                }
+            }
+        }
+
+        return $linked;
+    }
+
     public function render($data, $language = null)
     {
-        // Enhance data for templates
+        // Enhance data
         if (!empty($this->expanders)) {
             $data = $this->expandData($data);
         }
@@ -248,7 +341,11 @@ class DataPreprocessor_Component extends Singleton_Prototype
             $accept = $request->getAccept();
         } catch(HTTPException $e) {}
 
+        // Data to print
         if (in_array('json', $accept) || (isset($_GET['format']) && strstr($_GET['format'], 'json'))) {
+            // Flatten data (JSONAPI.org)
+            $this->jsonAPIFlatten($data);
+
             $data = $this->removeHiddenKeys($data);
             self::printData($data, $_GET['format'] === 'json-pretty');
 
