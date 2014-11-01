@@ -351,7 +351,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
             $this->jsonAPIFlatten($data);
 
             $data = $this->removeHiddenKeys($data);
-            self::printData($data, $_GET['format'] === 'json-pretty');
+            self::printData($data, strstr($_GET['format'], 'json-pretty'), strstr($_GET['format'].'@end', '-utf8'.'@end'));
 
             exit;
         }
@@ -365,9 +365,16 @@ class DataPreprocessor_Component extends Singleton_Prototype
         return $this->antispam ? str_replace('[[[at]]]', '@', self::antispam($view)) : $view;
     }
 
-    static public function printData($data, $pretty=false)
+    static public function printData($data, $pretty=false, $utf8 = false)
     {
         header('Content-Type: text/json');
+
+        if ($utf8) {
+            echo $pretty ? json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : json_encode($data, JSON_UNESCAPED_UNICODE);
+
+            return;
+        }
+
         echo $pretty ? json_encode($data, JSON_PRETTY_PRINT) : json_encode($data);
     }
 
