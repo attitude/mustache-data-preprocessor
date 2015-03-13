@@ -317,7 +317,7 @@ class DataPreprocessor_Component extends Singleton_Prototype
         return $linked;
     }
 
-    public function render($data, $language = null)
+    public function render($data, $language = null, $template = null)
     {
         // Enhance data
         if (!empty($this->expanders)) {
@@ -335,8 +335,10 @@ class DataPreprocessor_Component extends Singleton_Prototype
         // Add hasItems helpers next to arrays
         $data = $this->arraysHaveItems($data);
 
-        // Pick template from data
-        $template = isset($data['data']['template']) ? $data['data']['template'] : 'default';
+        if ($template === null) {
+            // Pick template from data
+            $template = isset($data['data']['template']) ? $data['data']['template'] : 'default';
+        }
 
         $accept = 'html';
 
